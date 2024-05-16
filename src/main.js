@@ -10,8 +10,8 @@ k.loadSprite("spritesheet", "./spritesheet.png", {
     "walk-down": { from: 936, to: 939, loop: true, speed: 8 },
     "idle-side": 975,
     "walk-side": { from: 975, to: 978, loop: true, speed: 8 },
-    "idle-up": 936,
-    "walk-up": { from: 1014, to: 1017939, loop: true, speed: 8 },
+    "idle-up": 1014,
+    "walk-up": { from: 1014, to: 1017, loop: true, speed: 8 },
   },
 });
 
@@ -43,7 +43,7 @@ k.scene("main", async () => {
   ]);
 
   for (const layer of layers) {
-    if (layer.name == "boundaries") {
+    if (layer.name === "boundaries") {
       for (const boundary of layer.objects) {
         map.add([
           k.area({
@@ -57,9 +57,10 @@ k.scene("main", async () => {
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
             player.isInDialogue = true;
-            displayDialogue(dialogueData[boundary.name], () => {
-              player.isInDialogue = false;
-            });
+            displayDialogue(
+              dialogueData[boundary.name],
+              () => (player.isInDialogue = false)
+            );
           });
         }
       }
@@ -82,21 +83,23 @@ k.scene("main", async () => {
   }
 
   setCamScale(k);
+
   k.onResize(() => {
     setCamScale(k);
   });
 
   k.onUpdate(() => {
-    k.camPos(player.pos.x, player.pos.y + 100);
+    k.camPos(player.worldPos().x, player.worldPos().y - 100);
   });
 
   k.onMouseDown((mouseBtn) => {
-    if (mouseBtn != "left" || player.isInDialogue) return;
+    if (mouseBtn !== "left" || player.isInDialogue) return;
 
     const worldMousePos = k.toWorld(k.mousePos());
     player.moveTo(worldMousePos, player.speed);
 
     const mouseAngle = player.pos.angle(worldMousePos);
+
     const lowerBound = 50;
     const upperBound = 125;
 
@@ -134,6 +137,7 @@ k.scene("main", async () => {
       return;
     }
   });
+
   function stopAnims() {
     if (player.direction === "down") {
       player.play("idle-down");
@@ -146,6 +150,7 @@ k.scene("main", async () => {
 
     player.play("idle-side");
   }
+
   k.onMouseRelease(stopAnims);
 
   k.onKeyRelease(() => {

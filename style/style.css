@@ -2,7 +2,9 @@
   font-family: monogram;
   src: url(monogram.ttf);
 }
-
+:root {
+  font-size: 12px;
+}
 body {
   font-family: monogram, monospace;
   font-size: 2rem;
